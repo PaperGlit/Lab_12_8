@@ -28,19 +28,69 @@ void insert(Elem*& L, Info value)
     tmp->next = L;
 }
 
-void LPrint(Elem* L)
+void print(Elem* L)
 {
-    Elem* first = L;
-    cout << L->info << "  ";
-    while (L->next != first)
+    Elem* F = L;
+    do 
     {
-        L = L->next;
         cout << L->info << "  ";
-    }
+        L = L->next;
+    } while (L != F);
     cout << endl;
 }
 
+void neighbor(Elem* L)
+{
+    Elem* F = L; bool found = false; int pos = 0, n = 0;
+    do 
+    {
+        if (L->prev->info == L->next->info)
+        {
+            cout << "Equal neighbors found near position " << pos << " (" << L->info << ") : " << L->next->info << endl;
+            found = true;
+            n++;
+        }
+        pos++;
+        L = L->next;
+    } while (L != F);
+    if (found)
+        cout << "Number of equal neighbors : " << n << endl;
+    else
+        cout << "No equal neighbors were found" << endl;
+}
 
+void delmin(Elem*& L)
+{
+    Elem* F = L; Info min = L->info; bool first;
+    while (L->next != F)
+    {
+        L = L->next;
+        if (L->info < min)
+            min = L->info;
+    }
+    L = F;
+    do
+    {
+        first = false;
+        if (L->info == min)
+        {
+            if (L == F)
+            {
+                first = true;
+                F = F->next;
+            }
+            Elem* next = L->next;
+            Elem* prev = L->prev;
+            delete L;
+            next->prev = prev;
+            prev->next = next;
+            L = next;
+        }
+        else
+            L = L->next;
+    } while (L != F || first);
+    L = F;
+}
 
 int main()
 {
@@ -53,5 +103,8 @@ int main()
         cin >> value;
         insert(L, value);
     }
-    LPrint(L);
+    print(L);
+    neighbor(L);
+    delmin(L);
+    print(L);
 }
